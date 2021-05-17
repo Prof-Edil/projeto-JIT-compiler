@@ -4,3 +4,6 @@ O projeto se trata de uma versão do [tutorial da LLVM](https://llvm.org/docs/tu
 ## O que é JIT
 A [compilação JIT](https://www.freecodecamp.org/news/just-in-time-compilation-explained/) (*Just In Time Compilation*, ou *Dynamic Compilation*) é uma forma de compilação que traduz o programa em código nativo durante a execução. Isso permite que mais códigos otimizados sejam gerados. É uma compilaçào que é feita durante a execução de um programa, ou seja, em *run time*. Temos como exemplos o JVM, de Java, e o CLR, de C#.
 Dessa forma, o código fonte é convertido em uma *assembly-like language structure*, um código intermediário que é então convertido em código de máquina somente quando necessário.
+
+## Linguagem Produzida
+A intenção do projeto é criar a linguagem **Kaleidoscope**, uma *toy-language* utilizada também no tutorial original da LLVM. Cabe ressaltar que a LLVM é responsável pelo compilador **clang**, utilizado e até "rivalizado" com o mais tradicional **gcc**. Começamos montando os básicos da linguagem, depois inserindo fluxos de controle (condicionais, loops), operadores definidos por usuários e variáveis mutáveis.
