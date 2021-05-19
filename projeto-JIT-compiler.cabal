@@ -1,0 +1,91 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           projeto-JIT-compiler
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/githubuser/projeto-JIT-compiler#readme>
+homepage:       https://github.com/Prof-Edil/projeto-JIT-compiler#readme
+bug-reports:    https://github.com/Prof-Edil/projeto-JIT-compiler/issues
+author:         Johann Homonnai
+maintainer:     johannhomonnai@gmail.com
+copyright:      2021 Johann
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/Prof-Edil/projeto-JIT-compiler
+
+library
+  exposed-modules:
+      Codegen
+      Lexer
+      Parser
+      Syntax
+  other-modules:
+      Paths_projeto_JIT_compiler
+  hs-source-dirs:
+      src
+  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , containers
+    , haskeline
+    , llvm-hs
+    , llvm-hs-pure
+    , mtl
+    , parsec
+    , protolude
+    , string-transform
+  default-language: Haskell2010
+
+executable JITCompHaskell-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_projeto_JIT_compiler
+  hs-source-dirs:
+      app
+  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , containers
+    , haskeline
+    , llvm-hs
+    , llvm-hs-pure
+    , mtl
+    , parsec
+    , projeto-JIT-compiler
+    , protolude
+    , string-transform
+  default-language: Haskell2010
+
+test-suite JITCompHaskell-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_projeto_JIT_compiler
+  hs-source-dirs:
+      test
+  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JITCompHaskell
+    , base >=4.7 && <5
+    , bytestring
+    , containers
+    , haskeline
+    , llvm-hs
+    , llvm-hs-pure
+    , mtl
+    , parsec
+    , protolude
+    , string-transform
+  default-language: Haskell2010
