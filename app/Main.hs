@@ -7,13 +7,12 @@ import System.Console.Haskeline
 
 process :: String -> IO ()
 process line = do
-    let res = parseToplevel line
-    case res of
+    case parseTopLevel line of
         Left err -> print err
         Right ex -> mapM_ print ex
 
 main :: IO ()
-main = runInput defaultSettings loop
+main = runInputT defaultSettings loop
     where
         loop = do
             minput <- getInputLine "ready> "

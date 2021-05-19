@@ -84,7 +84,7 @@ define :: Type -> String -> [(Type, Name)] -> [BasicBlock] -> LLVM ()
 define retty label argtys body = addDefn $
     GlobalDefinition $ functionDefaults {
       name        = Name label
-    , parameters  = ([Parameter ty n, [] | (ty, nm) <- argtys], False)
+    , parameters  = ([Parameter ty nm [] | (ty, nm) <- argtys], False)
     , returnType  = retty
     , basicBlocks = body
     }
@@ -92,9 +92,14 @@ define retty label argtys body = addDefn $
 external :: Type -> String -> [(Type, Name)] -> LLVM ()
 external retty label argtys = addDefn $
     GlobalDefinition $ functionDefaults {
-      name       = Name label
-    , linkage    = L.External
-    , parameters = ([Parameter ty nm [] | (ty, nm) <- argtys], False)
-    , 
+      name        = Name label
+    , linkage     = L.External
+    , parameters  = ([Parameter ty nm [] | (ty, nm) <- argtys], False)
+    , returnType  = retty
+    , basicBlocks = []
     }
-    }
+
+-- With our monad we'll create several functions to manipulate the current block
+-- state so that we can push and pop the block "cursor" and append instructions
+-- into the current block
+

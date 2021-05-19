@@ -1,4 +1,4 @@
-name:                JITCompHaskell
+name:                projeto-JIT-compiler
 version:             0.1.0.0
 github:              "Prof-Edil/projeto-JIT-compiler"
 license:             BSD3
@@ -29,30 +29,30 @@ dependencies:
 - haskeline
 - string-transform
 - containers
+- mtl
 
-default-extensions:
-  - NoImplicitPrelude
-  - OverloadedStrings
-  - NoMonomorphismRestriction
-  - RankNTypes
-  - LambdaCase
-  - UnicodeSyntax
-  - GADTs
-  - ScopedTypeVariables
-  - DeriveGeneric
-  - DerivingStrategies
-  - FlexibleContexts
-  - FlexibleInstances
-  - DataKinds
-  - GeneralizedNewtypeDeriving
-  - DefaultSignatures
-  - QuasiQuotes
-  - TypeOperators
-  - MultiParamTypeClasses
-  - MultiWayIf
-  - TypeInType
-  - DerivingVia
-  - TypeApplications
+# default-extensions:
+#   - OverloadedStrings
+#   - NoMonomorphismRestriction
+#   - RankNTypes
+#   - LambdaCase
+#   - UnicodeSyntax
+#   - GADTs
+#   - ScopedTypeVariables
+#   - DeriveGeneric
+#   - DerivingStrategies
+#   - FlexibleContexts
+#   - FlexibleInstances
+#   - DataKinds
+#   - GeneralizedNewtypeDeriving
+#   - DefaultSignatures
+#   - QuasiQuotes
+#   - TypeOperators
+#   - MultiParamTypeClasses
+#   - MultiWayIf
+#   - TypeInType
+#   - DerivingVia
+#   - TypeApplications
 
 ghc-options:
   - -ferror-spans
@@ -74,7 +74,7 @@ executables:
     - -rtsopts
     - -with-rtsopts=-N
     dependencies:
-    - JITCompHaskell
+    - projeto-JIT-compiler
     - haskeline
 
 tests:
