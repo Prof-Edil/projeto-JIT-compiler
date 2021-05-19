@@ -6,104 +6,55 @@ cabal-version: 1.12
 
 name:           JITCompHaskell
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/Prof-Edil/projeto-jit-compiler#readme>
-homepage:       https://github.com/Prof-Edil/projeto-jit-compiler#readme
-bug-reports:    https://github.com/Prof-Edil/projeto-jit-compiler/issues
-author:         Johann
-maintainer:     johannhomonnai@gmail.com.com
-copyright:      2021 Johann
+description:    Please see the README on GitHub at <https://github.com/githubuser/JITCompHaskell#readme>
+homepage:       https://github.com/githubuser/JITCompHaskell#readme
+bug-reports:    https://github.com/githubuser/JITCompHaskell/issues
+author:         Author name here
+maintainer:     example@example.com
+copyright:      2021 Author name here
 license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.org
+    README.md
+    ChangeLog.md
 
 source-repository head
   type: git
-  location: https://github.com/Prof-Edil/projeto-jit-compiler
+  location: https://github.com/githubuser/JITCompHaskell
 
 library
+  exposed-modules:
+      Lib
   other-modules:
       Paths_JITCompHaskell
   hs-source-dirs:
       src
-  default-extensions:
-      NoImplicitPrelude
-      OverloadedStrings
-      NoMonomorphismRestriction
-      RankNTypes
-      LambdaCase
-      UnicodeSyntax
-      GADTs
-      ScopedTypeVariables
-      DeriveGeneric
-      DerivingStrategies
-      FlexibleContexts
-      FlexibleInstances
-      DataKinds
-      GeneralizedNewtypeDeriving
-      DefaultSignatures
-      QuasiQuotes
-      TypeOperators
-      MultiParamTypeClasses
-      MultiWayIf
-      TypeInType
-      DerivingVia
-      TypeApplications
-  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6
   build-depends:
       base >=4.7 && <5
-    , bytestring
-    , containers
-    , haskeline
-    , llvm-hs
-    , llvm-hs-pure
-    , parsec
-    , protolude
-    , string-transform
   default-language: Haskell2010
 
-executable chapter2-exe
+executable JITCompHaskell-exe
   main-is: Main.hs
   other-modules:
-      Lexer
-      Parser
-      Syntax
       Paths_JITCompHaskell
   hs-source-dirs:
-      src/chapter2
-  default-extensions:
-      NoImplicitPrelude
-      OverloadedStrings
-      NoMonomorphismRestriction
-      RankNTypes
-      LambdaCase
-      UnicodeSyntax
-      GADTs
-      ScopedTypeVariables
-      DeriveGeneric
-      DerivingStrategies
-      FlexibleContexts
-      FlexibleInstances
-      DataKinds
-      GeneralizedNewtypeDeriving
-      DefaultSignatures
-      QuasiQuotes
-      TypeOperators
-      MultiParamTypeClasses
-      MultiWayIf
-      TypeInType
-      DerivingVia
-      TypeApplications
-  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , bytestring
-    , chapter2
-    , containers
-    , haskeline
-    , llvm-hs
-    , llvm-hs-pure
-    , parsec
-    , protolude
-    , string-transform
+      JITCompHaskell
+    , base >=4.7 && <5
+  default-language: Haskell2010
+
+test-suite JITCompHaskell-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_JITCompHaskell
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      JITCompHaskell
+    , base >=4.7 && <5
   default-language: Haskell2010

@@ -1,0 +1,89 @@
+name:                JITCompHaskell
+version:             0.1.0.0
+github:              "Prof-Edil/projeto-JIT-compiler"
+license:             BSD3
+author:              "Johann Homonnai"
+maintainer:          "johannhomonnai@gmail.com"
+copyright:           "2021 Johann"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/projeto-JIT-compiler#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- protolude
+- llvm-hs
+- llvm-hs-pure
+- parsec
+- bytestring
+- haskeline
+- string-transform
+- containers
+
+default-extensions:
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - NoMonomorphismRestriction
+  - RankNTypes
+  - LambdaCase
+  - UnicodeSyntax
+  - GADTs
+  - ScopedTypeVariables
+  - DeriveGeneric
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - DataKinds
+  - GeneralizedNewtypeDeriving
+  - DefaultSignatures
+  - QuasiQuotes
+  - TypeOperators
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - TypeInType
+  - DerivingVia
+  - TypeApplications
+
+ghc-options:
+  - -ferror-spans
+  - -Wall
+  - -fno-warn-orphans
+  - -fno-warn-name-shadowing
+  - -fno-warn-type-defaults
+  - -j6
+
+library:
+  source-dirs: src
+
+executables:
+  JITCompHaskell-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - JITCompHaskell
+    - haskeline
+
+tests:
+  JITCompHaskell-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - JITCompHaskell
