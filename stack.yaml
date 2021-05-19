@@ -1,7 +1,1 @@
 resolver: lts-17.12
-
-packages:
-  - '.'
-
-extra-deps:
-  - llvm-hs-9.0.1

@@ -6,46 +6,104 @@ cabal-version: 1.12
 
 name:           JITCompHaskell
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/Prof-Edil/projeto-JIT-compiler/blob/main/README.md>
-homepage:       https://github.com/Prof-Edil/projeto-JIT-compiler/blob/main/README.md
-bug-reports:    https://github.com/Prof-Edil/projeto-JIT-compiler/issues
-author:         Ivan, Johann, Maria Gabriela
-copyright:      2021 Author name here
+description:    Please see the README on GitHub at <https://github.com/Prof-Edil/projeto-jit-compiler#readme>
+homepage:       https://github.com/Prof-Edil/projeto-jit-compiler#readme
+bug-reports:    https://github.com/Prof-Edil/projeto-jit-compiler/issues
+author:         Johann
+maintainer:     johannhomonnai@gmail.com.com
+copyright:      2021 Johann
 license:        BSD3
-license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
-    README.md
-    ChangeLog.md
+    README.org
 
 source-repository head
   type: git
-  location: https://github.com/Prof-Edil/projeto-JIT-compiler
+  location: https://github.com/Prof-Edil/projeto-jit-compiler
 
 library
+  other-modules:
+      Paths_JITCompHaskell
+  hs-source-dirs:
+      src
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      NoMonomorphismRestriction
+      RankNTypes
+      LambdaCase
+      UnicodeSyntax
+      GADTs
+      ScopedTypeVariables
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      DataKinds
+      GeneralizedNewtypeDeriving
+      DefaultSignatures
+      QuasiQuotes
+      TypeOperators
+      MultiParamTypeClasses
+      MultiWayIf
+      TypeInType
+      DerivingVia
+      TypeApplications
+  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6
   build-depends:
       base >=4.7 && <5
-    , haskeline     >= 0.7.1.2
-    , llvm-hs       >= 9.0
-    , llvm-hs-pure  >= 9.0
-    , mtl           >= 2.1.3
-    , transformers  >= 0.3.0.0 && < 0.6
+    , bytestring
+    , containers
+    , haskeline
+    , llvm-hs
+    , llvm-hs-pure
+    , parsec
+    , protolude
+    , string-transform
   default-language: Haskell2010
 
-executable chapter2
+executable chapter2-exe
   main-is: Main.hs
   other-modules:
+      Lexer
       Parser
       Syntax
-      Lexer
+      Paths_JITCompHaskell
   hs-source-dirs:
       src/chapter2
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      NoMonomorphismRestriction
+      RankNTypes
+      LambdaCase
+      UnicodeSyntax
+      GADTs
+      ScopedTypeVariables
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      DataKinds
+      GeneralizedNewtypeDeriving
+      DefaultSignatures
+      QuasiQuotes
+      TypeOperators
+      MultiParamTypeClasses
+      MultiWayIf
+      TypeInType
+      DerivingVia
+      TypeApplications
+  ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , haskeline     >= 0.7.1.2
-    , llvm-hs       >= 9.0
-    , llvm-hs-pure  >= 9.0
-    , parsec        >= 3.1
-    , mtl           >= 2.1.3
-    , transformers  >= 0.3.0.0 && < 0.6
+    , bytestring
+    , chapter2
+    , containers
+    , haskeline
+    , llvm-hs
+    , llvm-hs-pure
+    , parsec
+    , protolude
+    , string-transform
   default-language: Haskell2010
