@@ -24,13 +24,6 @@ import qualified LLVM.AST.Attribute as A
 import qualified LLVM.AST.CallingConvention as CC
 import qualified LLVM.AST.FloatingPointPredicate as FP
 
--------------------------------------------------------------------------------
--- Module Level
--------------------------------------------------------------------------------
-
--------------------------------------------------------------------------------
--- Type Level
--------------------------------------------------------------------------------
 -- All variables will be of a single type, double
 double :: Type
 double = FLoatingPointType 64 IEEE
@@ -102,4 +95,27 @@ external retty label argtys = addDefn $
 -- With our monad we'll create several functions to manipulate the current block
 -- state so that we can push and pop the block "cursor" and append instructions
 -- into the current block
+entry :: Codegen Name
+entry = gets currentBlock
 
+addBlock :: String -> Codegen Name
+addBlock bname = do
+  bls <- gets blocks
+  ix  <- gets blockCount
+  nms <- gets names
+
+  let new = emptyBlock ix
+      (qname, supply) = uniqueName bname nms
+  
+  modify $ \s -> s { blocks = Map.insert (Name qname) new bls
+                   , blockCount = ix + 1
+                   , names = supply
+                   }
+  pure (Name qname)
+
+setBlock :: Name -> Codegen Name
+setBlock bname = do
+  modify $ \s -> s { currentBlock = bname }
+  pure bname
+
+--getBlock :: Codegen Name
