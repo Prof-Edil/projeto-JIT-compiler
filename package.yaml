@@ -31,28 +31,28 @@ dependencies:
 - containers
 - mtl
 
-# default-extensions:
-#   - OverloadedStrings
-#   - NoMonomorphismRestriction
-#   - RankNTypes
-#   - LambdaCase
-#   - UnicodeSyntax
-#   - GADTs
-#   - ScopedTypeVariables
-#   - DeriveGeneric
-#   - DerivingStrategies
-#   - FlexibleContexts
-#   - FlexibleInstances
-#   - DataKinds
-#   - GeneralizedNewtypeDeriving
-#   - DefaultSignatures
-#   - QuasiQuotes
-#   - TypeOperators
-#   - MultiParamTypeClasses
-#   - MultiWayIf
-#   - TypeInType
-#   - DerivingVia
-#   - TypeApplications
+default-extensions:
+  - OverloadedStrings
+  - NoMonomorphismRestriction
+  - RankNTypes
+  - LambdaCase
+  - UnicodeSyntax
+  - GADTs
+  - ScopedTypeVariables
+  - DeriveGeneric
+  - DerivingStrategies
+  - FlexibleContexts
+  - FlexibleInstances
+  - DataKinds
+  - GeneralizedNewtypeDeriving
+  - DefaultSignatures
+  - QuasiQuotes
+  - TypeOperators
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - TypeInType
+  - DerivingVia
+  - TypeApplications
 
 ghc-options:
   - -ferror-spans

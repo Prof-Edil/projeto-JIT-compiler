@@ -3,6 +3,9 @@ module Parser where
 import Text.Parsec
 import Text.Parsec.String (Parser)
 
+import Protolude hiding (many, (<|>), try, for)
+import Prelude(String)
+
 import qualified Text.Parsec.Expr as Ex
 import qualified Text.Parsec.Token as Tok
 

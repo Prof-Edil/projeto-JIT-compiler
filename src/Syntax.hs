@@ -1,5 +1,8 @@
 module Syntax where
 
+import Protolude
+import Prelude (String)
+
 type Name = String
 
 data Expr

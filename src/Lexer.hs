@@ -1,5 +1,8 @@
 module Lexer where
 
+import Protolude
+import Prelude (String)
+
 import Text.Parsec.String (Parser)
 import Text.Parsec.Language (emptyDef)
 
