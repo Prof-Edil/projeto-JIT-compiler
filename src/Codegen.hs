@@ -2,15 +2,10 @@
 -- AST
 module Codegen where
 
+import Data.ByteString.Short hiding (length)
+
 import Protolude hiding (Type, moduleName, local, head)
 import Prelude (String, error)
-import Data.Word
-import Data.String
-import Data.List
-import Data.Function
-
-import Control.Monad.State
-import Control.Applicative
 
 import LLVM.AST
 import LLVM.AST.AddrSpace
@@ -24,26 +19,29 @@ import qualified LLVM.AST.Constant as C
 import qualified LLVM.AST.Attribute as A
 import qualified LLVM.AST.CallingConvention as CC
 import qualified LLVM.AST.FloatingPointPredicate as FP
-import Data.ByteString.Short (ShortByteString)
 
 ----------------------------------------------------------------------------------------------------
--- Code Generation Setup --
+-- Code Generation Setup
 ----------------------------------------------------------------------------------------------------
 
 ----------------------------------------------------------------------------------------------------
--- Types --
+-- Types
 ----------------------------------------------------------------------------------------------------
--- All variables will be of a single type, double
+
+-- 64-bit floating point value
+
 double :: Type
 double = FloatingPointType DoubleFP
 
 ----------------------------------------------------------------------------------------------------
--- Codegen State --
+-- Codegen State
 ----------------------------------------------------------------------------------------------------
 
 type SymbolTable = Map.Map String Operand
+
 -- This record type the internal state of our code generator as we walk the AST.
 -- This is for the toplevel module code generation.
+
 data CodegenState
     = CodegenState {
       currentBlock :: Name                     -- Name of the active block to append to
@@ -55,6 +53,7 @@ data CodegenState
     } deriving Show
 
 -- This record is for basic blocks inside of function definitions.
+
 data BlockState
     = BlockState {
       idx   :: Int                             -- Block index
@@ -63,9 +62,10 @@ data BlockState
     } deriving Show
 
 ----------------------------------------------------------------------------------------------------
--- Names --
+-- Names
 ----------------------------------------------------------------------------------------------------
 -- Named values within the module have a special type Name.
+
 type Names = Map.Map String Int
 
 uniqueName :: String -> Names -> (String, Names)
@@ -75,11 +75,12 @@ uniqueName n ns =
     Just i  -> (n <> show i, Map.insert n (i + 1) ns)
 
 ----------------------------------------------------------------------------------------------------
--- Codegen Operations --
+-- Codegen Operations
 ----------------------------------------------------------------------------------------------------
 
 -- We'll hold the state of the code generator inside of Codegen State monad.
 -- The Codegen monad contains a map of block names to their BlockState representation.
+
 newtype Codegen a = Codegen { runCodegen :: State CodegenState a }
     deriving (Functor, Applicative, Monad, MonadState CodegenState)
 
@@ -110,20 +111,21 @@ execCodegen sym m = execState (runCodegen m) (emptyCodegen { symtab = sym })
 fresh :: Codegen Word
 fresh = do
   i <- gets count
-  modify $ \s -> s { count = 1 + i }
-  pure $ i + 1
+  modify $ \s -> s { count = succ i }
+  pure $ succ i
 
 ----------------------------------------------------------------------------------------------------
--- Module Level --
+-- Module Level
 ----------------------------------------------------------------------------------------------------
 -- LLVM State monad which will hold all code for the LLVM module and upon
 -- evaluation will emit an llvm-hs Module containing the AST. We'll append to 
 -- the list of definitions in the AST.Module field moduleDefinitions.
+
 newtype LLVM a = LLVM (State AST.Module a)
     deriving (Functor, Applicative, Monad, MonadState AST.Module)
 
-runLLVM :: AST.Module -> LLVM a -> AST.Module
-runLLVM mod (LLVM m) = execState m mod
+runLLVM :: AST.Module -> LLVM a -> (a, AST.Module)
+runLLVM mod (LLVM m) = runState m mod
 
 emptyModule :: ShortByteString -> AST.Module
 emptyModule label = defaultModule { moduleName = label }
@@ -142,40 +144,54 @@ makeFn retty argtys label =
       (mkName label)
 
 -- Toplevel definitions: local functions and external function declarations.
-define :: Type -> String -> [(Type, Name)] -> [BasicBlock] -> LLVM ()
-define retty label argtys body =
-  addDefn
-  $ GlobalDefinition
-  $ functionDefaults
-    {
-      parameters               = ((\(ty,nm) -> Parameter ty nm []) <$> argtys, False)
-    , Global.callingConvention = CC.Fast -- for fun!
-    , returnType               = retty 
-    , basicBlocks              = body
-    , name                     = mkName label
-    }
 
-external :: Type -> String -> [(Type, Name)] -> LLVM ()
-external retty label argtys =
+define :: Type -> String -> [(Type, Name)] -> [BasicBlock] -> LLVM Operand
+define retty label argtys body = do
   addDefn
-  $ GlobalDefinition 
-  $ functionDefaults
-    {
-      parameters               = ((\(ty, nm) -> Parameter ty nm []) <$> argtys, False)
-    , Global.callingConvention = CC.Fast -- for fun!
-    , returnType               = retty
-    , basicBlocks              = []
-    , name                     = mkName label
-    , linkage                  = L.External
-    }
+    $ GlobalDefinition
+    $ functionDefaults
+      {
+        parameters               = params
+      , Global.callingConvention = CC.Fast -- for fun!
+      , returnType               = retty 
+      , basicBlocks              = body
+      , name                     = mkName label
+      }
+  pure
+    $ ConstantOperand
+    $ C.GlobalReference
+        (PointerType (FunctionType retty (fst <$> argtys) False) (AddrSpace 0))
+        (mkName label)
+    where
+      params = ((\(ty, m) -> Parameter ty nm []) <$> argtys, False)
+
+external :: Type -> String -> [(Type, Name)] -> LLVM Operand
+external retty label argtys = do
+  addDefn
+    $ GlobalDefinition 
+    $ functionDefaults
+      {
+        parameters               = ((\(ty, nm) -> Parameter ty nm []) <$> argtys, False)
+      , Global.callingConvention = CC.Fast -- for fun!
+      , returnType               = retty
+      , basicBlocks              = []
+      , name                     = mkName label
+      , linkage                  = L.External
+      }
+  pure
+    $ ConstantOperand
+    $ C.GlobalReference
+        (PointerType (FunctionType retty (fst <$> argtys) False) (AddrSpace 0))
+        (mkName label)
 
 ----------------------------------------------------------------------------------------------------
--- Block Stack --
+-- Block Stack
 ----------------------------------------------------------------------------------------------------
 
 -- With our monad we'll create several functions to manipulate the current block
 -- state so that we can push and pop the block "cursor" and append instructions
 -- into the current block
+
 entry :: Codegen Name
 entry = gets currentBlock
 
@@ -185,14 +201,12 @@ addBlock bname = do
   ix  <- gets blockCount
   nms <- gets names
 
-  let new = emptyBlock ix
+  let new             = emptyBlock ix
       (qname, supply) = uniqueName bname nms
-
-  modify $ \s -> s {  blocks     = Map.insert (mkName qname) new bls
-                    , blockCount = succ ix
-                    , names      = supply
-                   }
-  pure $ mkName qname
+  modify $ \s -> s { blocks     = Map.insert (mkName qname) new bls
+                   , blockCount = succ ix
+                   , names      = supply }
+  pure (mkName qname)
 
 setBlock :: Name -> Codegen Name
 setBlock bname = do
@@ -215,19 +229,24 @@ current = do
     Just x -> pure x
     Nothing -> error $ "No such block: " <> show c
 
--- We can now work with named LLVM values, so we need to create functions
--- to refer to references of values
+
 local :: Name -> Operand
 local = LocalReference double
 
 -- Emits a named value which refers to a toplevel function in our module,
 -- or an externally declared function
-externf :: Name -> Operand
-externf = ConstantOperand . C.GlobalReference double
+-- externf :: Name -> Operand
+-- externf = ConstantOperand . C.GlobalReference double
+externf :: Name -> Codegen Operand
+externf (UnName name) = do
+  getvar (show name)
+externf (Name name) = do
+  getvar (toString name)
 
 -- Internal function that takes an llvm-hs AST node and push it on the current
 -- basic block stack and return the left hand side reference of the instruction
-instr :: Instruction -> Codegen Operand
+
+instr :: Instruction -> Codegen (Operand)
 instr ins = do
   n <- fresh 
   let ref = UnName n
@@ -236,43 +255,18 @@ instr ins = do
   modifyBlock (blk { stack = (ref := ins) : i })
   pure $ local ref
 
+unminstr :: Instruction -> Codegen ()
+unminstr ins = do
+  blk <- current
+  let i = stack blk
+  modifyBlock (blk { stack = (Do ins) : i })
+
 terminator :: Named Terminator -> Codegen (Named Terminator)
 terminator t = do
   blk <- current
   modifyBlock (blk { term = Just t })
   pure t
 
-----------------------------------------------------------------------------------------------------
--- Instructions --
-----------------------------------------------------------------------------------------------------
-
--- Instructions in LLVM are either numbered sequentially or given explicit
--- variable names (%0, %foo, ...).
--- define i32 @add(i32 %a, i32 %b) {
---   %1 = add i32 %a, %b
---   ret i32 %1
--- }
--- In llvm-hs both these types are represented in a sum type that has the
--- constructors UnName and Name. We'll use numbered expressions and map the
--- numbers to identifiers within our symbol table. With every new instruction,
--- the internal counter will be incremented, for which we add a fresh name 
--- supply.
-
--- We'll implement a simple symbol table as an association list to assign
--- variable names to operand quantities
-assign :: String -> Operand -> Codegen ()
-assign var x = do
-  l <- gets symtab
-  modify $ \s -> s { symtab = Map.insert (fromString var) x l }
-  
-getvar :: String -> Codegen Operand
-getvar var = do
-  syms <- gets symtab
-  case Map.lookup (fromString var) syms of
-    Just x  -> return x
-    Nothing -> error $ "Local variable not in scope: " <> show var
-
--- Wrapping the AST nodes for basic arithmetic operations
 fadd :: Operand -> Operand -> Codegen Operand
 fadd a b = instr $ FAdd noFastMathFlags a b []
 
@@ -295,14 +289,15 @@ uitofp :: Type -> Operand -> Codegen Operand
 uitofp ty a = instr $ UIToFP a ty []
 
 toArgs :: [Operand] -> [(Operand, [A.ParameterAttribute])]
-toArgs = fmap $ \x -> (x, [])
+toArgs = fmap (\x -> (x, []))
 
 ----------------------------------------------------------------------------------------------------
--- Control Flow --
+-- Control Flow
 ----------------------------------------------------------------------------------------------------
 
 -- Basic control flow operations that allow us to direct the control flow between
 -- basic blocks and return values
+
 br :: Name -> Codegen (Named Terminator)
 br val = terminator $ Do $ Br val []
 
@@ -312,18 +307,45 @@ cbr cond tr fl = terminator $ Do $ CondBr cond tr fl []
 ret :: Operand -> Codegen (Named Terminator)
 ret val = terminator $ Do $ Ret (Just val) []
 
--- "effect" instructions
+phi :: Type -> [(Operand, Name)] -> Codegen Operand
+phi ty incoming = instr $ Phi ty incoming []
+
+----------------------------------------------------------------------------------------------------
+-- Effects
+----------------------------------------------------------------------------------------------------
+
 -- Take a named function reference and a list of arguments. Evaluate it and
 -- invoke it at the current position
+
 call :: Operand -> [Operand] -> Codegen Operand
-call fn args = instr $ Call Nothing CC.C [] (Right fn) (toArgs args) [] []
+call fn args = instr $ Call Nothing CC.Fast [] (Right fn) (toArgs args) [] []
 
 -- Create a pointer to a stack allocated uninitialized value of the given type
+
 alloca :: Type -> Codegen Operand
 alloca ty = instr $ Alloca ty Nothing 0 []
 
-store :: Operand -> Operand -> Codegen Operand
-store ptr val = instr $ Store False ptr val Nothing 0 []
+store :: Operand -> Operand -> Codegen ())
+store ptr val = unminstr $ Store False ptr val Nothing 0 []
 
 load :: Operand -> Codegen Operand
 load ptr = instr $ Load False ptr Nothing 0 []
+
+
+----------------------------------------------------------------------------------------------------
+-- Symbol Table
+----------------------------------------------------------------------------------------------------
+
+assign :: String -> Operand -> Codegen ()
+assign var x = do
+  lcls <- gets symtab
+  modify $ \s -> s { symtab = Map.insert var x lcls }
+
+getvar :: String -> Codegen Operand
+getvar var = do
+  syms <- gets symtab
+  case Map.lookup var syms of
+    Just x  -> pure x
+    Nothing -> error $ "Local variable not in scope:"
+                     <> "\n syms: " <> show syms
+                     <> "\n var: "  <> var
