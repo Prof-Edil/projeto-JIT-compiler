@@ -165,7 +165,7 @@ cgen (S.For ivar start cond step body) = do
   -- for.exit
   ------------------
   setBlock forexit
-  pure 0
+  pure zero
 
 cgen (S.UnaryOp op a) =
   cgen $ S.Call ("unary" ++ op) [a]
@@ -211,11 +211,6 @@ initModule = emptyModule "my cool jit"
 
 test :: IO (AST.Module, SymbolTable)
 test = codegen initModule [ (S.Function "b" ["a"] (S.Var "a"))
-                          , S.Call "b" [S.Float 2]]
-               Map.empty
-
-tesa :: IO (AST.Module, SymbolTable)
-tesa = codegen initModule [ (S.Function "b" ["a"] (S.Var "a"))
                           , S.Call "b" [S.Float 2]]
                Map.empty
 

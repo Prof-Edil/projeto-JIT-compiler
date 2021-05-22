@@ -32,6 +32,7 @@ dependencies:
 - mtl
 
 default-extensions:
+  - NoImplicitPrelude
   - OverloadedStrings
   - NoMonomorphismRestriction
   - RankNTypes

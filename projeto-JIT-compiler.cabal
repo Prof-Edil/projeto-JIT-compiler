@@ -36,6 +36,7 @@ library
   hs-source-dirs:
       src
   default-extensions:
+      NoImplicitPrelude
       OverloadedStrings
       NoMonomorphismRestriction
       RankNTypes
@@ -78,6 +79,7 @@ executable JITCompHaskell-exe
   hs-source-dirs:
       app
   default-extensions:
+      NoImplicitPrelude
       OverloadedStrings
       NoMonomorphismRestriction
       RankNTypes
@@ -122,6 +124,7 @@ test-suite JITCompHaskell-test
   hs-source-dirs:
       test
   default-extensions:
+      NoImplicitPrelude
       OverloadedStrings
       NoMonomorphismRestriction
       RankNTypes

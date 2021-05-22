@@ -26,7 +26,7 @@ float :: Parser Double
 float = Tok.float lexer
 
 whitespace :: Parser ()
-whitespace = Tok.whitespace lexer
+whitespace = Tok.whiteSpace lexer
 
 parens :: Parser a -> Parser a
 parens = Tok.parens lexer

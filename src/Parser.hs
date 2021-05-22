@@ -3,7 +3,7 @@ module Parser where
 import Text.Parsec
 import Text.Parsec.String (Parser)
 
-import Protolude hiding (manu, (<|>), try, for)
+import Protolude hiding (many, (<|>), try, for)
 import Prelude (String)
 
 import qualified Text.Parsec.Expr as Ex
@@ -44,7 +44,7 @@ binops = [[ binary "*" Ex.AssocLeft
         , [ binary "<" Ex.AssocLeft ]]
 
 expr :: Parser Expr
-expr = Ex.buildExpressionparser (binops ++ [[unop], [binop]]) factor
+expr = Ex.buildExpressionParser (binops ++ [[unop], [binop]]) factor
 
 variable :: Parser Expr
 variable = Var <$> identifier
@@ -94,7 +94,7 @@ for = do
     body <- expr
     pure $ For var start cond step body
 
-unaryDef :: Parser Expr =
+unaryDef :: Parser Expr
 unaryDef = do
     reserved "def"
     reserved "unary"
@@ -155,8 +155,8 @@ topLevel = many $ do
     reservedOp ";"
     pure def
 
-parseExpr :: String <- Either ParseError Expr
+parseExpr :: String -> Either ParseError Expr
 parseExpr s = parse (contents expr) "<stdin>" s
 
-parseToplevel :: String :: Either ParseError [Expr]
-parseToplevel s = parse (contents toplevel) "<stdin>" s
+parseToplevel :: String -> Either ParseError [Expr]
+parseToplevel s = parse (contents topLevel) "<stdin>" s

@@ -163,7 +163,7 @@ define retty label argtys body = do
         (PointerType (FunctionType retty (fst <$> argtys) False) (AddrSpace 0))
         (mkName label)
     where
-      params = ((\(ty, m) -> Parameter ty nm []) <$> argtys, False)
+      params = ((\(ty, m) -> Parameter ty m []) <$> argtys, False)
 
 external :: Type -> String -> [(Type, Name)] -> LLVM Operand
 external retty label argtys = do
@@ -325,7 +325,7 @@ call fn args = instr $ Call Nothing CC.Fast [] (Right fn) (toArgs args) [] []
 alloca :: Type -> Codegen Operand
 alloca ty = instr $ Alloca ty Nothing 0 []
 
-store :: Operand -> Operand -> Codegen ())
+store :: Operand -> Operand -> Codegen ()
 store ptr val = unminstr $ Store False ptr val Nothing 0 []
 
 load :: Operand -> Codegen Operand
