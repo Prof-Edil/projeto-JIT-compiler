@@ -74,19 +74,19 @@ cgen (S.Call fn args) = do
     fnargs <- traverse cgen args
     fn     <- externf (AST.mkName fn)
     call fn fnargs
-cgen (S.Let a b c) = do
-    i   <- alloca double
-    val <- cgen b
-    store i val
-    assign a i
-    cgen c
-cgen(S.BinaryOp op a b) = do
-    case Map.lookup op binops of
-        Just f -> do
-            ca <- cgen a
-            cb <- cgen b
-            f ca cb
-        Nothing -> cgen (S.Call ("binary" ++ op) [a, b])
+-- cgen (S.Let a b c) = do
+--     i   <- alloca double
+--     val <- cgen b
+--     store i val
+--     assign a i
+--     cgen c
+-- cgen(S.BinaryOp op a b) = do
+--     case Map.lookup op binops of
+--         Just f -> do
+--             ca <- cgen a
+--             cb <- cgen b
+--             f ca cb
+--         Nothing -> cgen (S.Call ("binary" ++ op) [a, b])
 
 -- Association map of symbol strings to implementations of functions with the corresponding logic
 -- for the operation
@@ -107,9 +107,3 @@ lt a b = do
 ----------------------------------------------------------------------------------------------------
 -- Hook into LLVM bindings to generate a string representation of the LLVM IR which will print out
 -- the string on each action in the REPL
-codegen :: AST.Module -> [S.Expr] -> SymbolTable -> IO (AST.Module, SymbolTable)
-codegen mod fns tbl = do
-    pure (modul,tbl')
-    where
-        modn           = foldM (flip codegenTop) tbl fns
-        (tbl', newast) = runLLVM mod modn
