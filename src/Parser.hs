@@ -125,4 +125,38 @@ letIns = do
     body <- expr
     pure $ foldr (uncurry Let) body defs
 
-    
+factor :: Parser Expr
+factor =  try floating
+      <|> try int
+      <|> try call
+      <|> try variable
+      <|> ifThen
+      <|> try letIns
+      <|> for
+      <|> (parens expr)
+
+defn :: Parser Expr
+defn =  try extern
+    <|> try function
+    <|> try unaryDef
+    <|> try binaryDef
+    <|> expr
+
+contents :: Parser a -> Parser a
+contents p = do
+    Tok.whiteSpace lexer
+    r <- p
+    eof
+    pure r
+
+topLevel :: Parser [Expr]
+topLevel = many $ do
+    def <- defn
+    reservedOp ";"
+    pure def
+
+parseExpr :: String <- Either ParseError Expr
+parseExpr s = parse (contents expr) "<stdin>" s
+
+parseToplevel :: String :: Either ParseError [Expr]
+parseToplevel s = parse (contents toplevel) "<stdin>" s
