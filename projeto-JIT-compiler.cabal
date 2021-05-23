@@ -26,6 +26,8 @@ source-repository head
 library
   exposed-modules:
       Codegen
+      Emit
+      JIT
       Lexer
       Parser
       Syntax
@@ -33,6 +35,29 @@ library
       Paths_projeto_JIT_compiler
   hs-source-dirs:
       src
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      NoMonomorphismRestriction
+      RankNTypes
+      LambdaCase
+      UnicodeSyntax
+      GADTs
+      ScopedTypeVariables
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      DataKinds
+      GeneralizedNewtypeDeriving
+      DefaultSignatures
+      QuasiQuotes
+      TypeOperators
+      MultiParamTypeClasses
+      MultiWayIf
+      TypeInType
+      DerivingVia
+      TypeApplications
   ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6
   build-depends:
       base >=4.7 && <5
@@ -53,6 +78,29 @@ executable JITCompHaskell-exe
       Paths_projeto_JIT_compiler
   hs-source-dirs:
       app
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      NoMonomorphismRestriction
+      RankNTypes
+      LambdaCase
+      UnicodeSyntax
+      GADTs
+      ScopedTypeVariables
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      DataKinds
+      GeneralizedNewtypeDeriving
+      DefaultSignatures
+      QuasiQuotes
+      TypeOperators
+      MultiParamTypeClasses
+      MultiWayIf
+      TypeInType
+      DerivingVia
+      TypeApplications
   ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
@@ -75,6 +123,29 @@ test-suite JITCompHaskell-test
       Paths_projeto_JIT_compiler
   hs-source-dirs:
       test
+  default-extensions:
+      NoImplicitPrelude
+      OverloadedStrings
+      NoMonomorphismRestriction
+      RankNTypes
+      LambdaCase
+      UnicodeSyntax
+      GADTs
+      ScopedTypeVariables
+      DeriveGeneric
+      DerivingStrategies
+      FlexibleContexts
+      FlexibleInstances
+      DataKinds
+      GeneralizedNewtypeDeriving
+      DefaultSignatures
+      QuasiQuotes
+      TypeOperators
+      MultiParamTypeClasses
+      MultiWayIf
+      TypeInType
+      DerivingVia
+      TypeApplications
   ghc-options: -ferror-spans -Wall -fno-warn-orphans -fno-warn-name-shadowing -fno-warn-type-defaults -j6 -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       JITCompHaskell

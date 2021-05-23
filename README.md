@@ -7,3 +7,6 @@ Dessa forma, o código fonte é convertido em uma *assembly-like language struct
 
 ## Linguagem Produzida
 A intenção do projeto é criar a linguagem **Kaleidoscope**, uma *toy-language* utilizada também no tutorial original da LLVM. Cabe ressaltar que a LLVM é responsável pelo compilador **clang**, utilizado e até "rivalizado" com o mais tradicional **gcc**. Começamos montando os básicos da linguagem, depois inserindo fluxos de controle (condicionais, loops), operadores definidos por usuários e variáveis mutáveis.
+
+## Instruções
+Atualmente, recomenda-se o uso de um terminal ubuntu e o comando stack build para fazer a compilação do projeto.
