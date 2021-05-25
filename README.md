@@ -12,3 +12,6 @@ A intenção do projeto é criar a linguagem **Kaleidoscope**, uma *toy-language
 
 ## Instruções
 Atualmente, recomenda-se o uso de um terminal ubuntu e o comando stack build para fazer a compilação do projeto.
+
+## Vídeo de apresentação
+O vídeo de apresentação pode ser visto clicando [aqui](https://www.youtube.com/watch?v=PR9IxKZmpJ0)
